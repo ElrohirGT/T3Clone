@@ -22,7 +22,10 @@
       pkgs = nixpkgsFor.${system};
     in {
       default = pkgs.mkShell {
-        packages = [pkgs.gleam];
+        packages = [
+          pkgs.gleam
+          pkgs.erlang
+        ];
       };
     });
   };
