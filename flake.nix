@@ -25,6 +25,8 @@
         packages = [
           pkgs.gleam
           pkgs.erlang
+          pkgs.rebar3
+          pkgs.inotify-tools
         ];
       };
     });
