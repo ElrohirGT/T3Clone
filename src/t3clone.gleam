@@ -1,9 +1,9 @@
 // IMPORTS ---------------------------------------------------------------------
 
-import counter
-import gleam/int
+import details
 import lustre
 import lustre/attribute
+import lustre/component
 import lustre/element.{type Element}
 import lustre/element/html
 
@@ -12,7 +12,10 @@ import lustre/element/html
 pub fn main() {
   let app = lustre.simple(init, update, view)
 
-  let assert Ok(_) = counter.register()
+  // Typically, it's important to register a component *before* your app starts.
+  // This means the component's tag name – "my-counter" in this case - is registered
+  // with the browser.
+  let assert Ok(_) = details.register()
   let assert Ok(_) = lustre.start(app, "#app", Nil)
 
   Nil
@@ -20,38 +23,49 @@ pub fn main() {
 
 // MODEL -----------------------------------------------------------------------
 
+/// For this example, our main "app" doesn't have any state or functionality of
+/// its own. Instead we'll see that each "my-counter" element contains its own
+/// state and functionality.
+///
 type Model =
-  Int
+  Nil
 
 fn init(_) -> Model {
-  0
+  Nil
 }
 
 // UPDATE ----------------------------------------------------------------------
 
-type Msg {
-  CounterUpdatedValue(Int)
-}
+type Msg =
+  Nil
 
-fn update(_model: Model, msg: Msg) -> Model {
-  case msg {
-    CounterUpdatedValue(value) -> value
-  }
+fn update(_, _) -> Model {
+  Nil
 }
 
 // VIEW ------------------------------------------------------------------------
 
-fn view(model: Model) -> Element(Msg) {
-  html.div([attribute.class("p-32 mx-auto w-full max-w-2xl space-y-4")], [
-    html.div([attribute.class("border rounded p-2")], [
-      counter.element([
-        counter.value(model),
-        counter.on_change(CounterUpdatedValue),
+fn view(_) -> Element(Msg) {
+  html.div(
+    [attribute.class("p-32 mx-auto w-full max-w-2xl flex flex-col gap-8")],
+    [
+      details.element([details.summary("Open me for a surprise!")], [
+        html.img([
+          attribute.class("aspect-square w-full max-w-2xl"),
+          attribute.src("https://cdn2.thecatapi.com/images/8lg.gif"),
+        ]),
       ]),
-    ]),
-    html.p([], [
-      html.text("The last saved count was: "),
-      html.text(int.to_string(model)),
-    ]),
-  ])
+      details.element([], [
+        html.p([component.slot("summary"), attribute.class("font-semibold")], [
+          html.text("I have a surprise "),
+          html.span([attribute.class("text-blue-500")], [html.text("too")]),
+          html.text("!"),
+        ]),
+        html.img([
+          attribute.class("aspect-square w-full max-w-2xl"),
+          attribute.src("https://cdn2.thecatapi.com/images/8lg.gif"),
+        ]),
+      ]),
+    ],
+  )
 }
